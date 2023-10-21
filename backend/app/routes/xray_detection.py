@@ -25,6 +25,8 @@ import time
 import pandas as pd
 import csv
 import email.mime.application
+from datetime import datetime, timedelta
+
 serialNumber = 0
 _logger = logging.getLogger("config")
 
@@ -155,5 +157,15 @@ def get_data():
     df = pd.read_csv("./csvData/sep_date_time.csv")
     
     result = df.query(queryString)
-    result.to_csv('filtered_data.csv', index=False)
-    return Response('aaa',200)
+    #result.to_csv('filtered_data.csv', index=False)
+    result['Time'] = df['Time'] = pd.to_timedelta(df['Time'])
+
+
+    # 计算时间列的平均值
+    average_time = result['Time'].mean()
+
+    # 将平均时间值格式化为字符串
+    average_time_str = str(average_time)
+
+   
+    return Response(average_time_str,200)
