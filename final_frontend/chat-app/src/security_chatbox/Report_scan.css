@@ -1,0 +1,44 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+  min-height: 100vh;
+}
+
+.report-section {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-200px);
+}
+
+.svg-image {
+  margin-bottom: 20px;
+  transform: translateY(-100px); 
+}
+
+.report {
+  padding: 10px;
+  width: 300px;
+  margin-top: 20px;
+}
+
+.maintenance-section {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.maintenance-predictions {
+  padding: 10px;
+  width: 200px;
+}
+
+.prediction {
+  margin-bottom: 5px;
+}

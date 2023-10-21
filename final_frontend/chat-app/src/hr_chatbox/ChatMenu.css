@@ -1,0 +1,15 @@
+.chat-menu {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    background-color: #fff;
+  }
+  
+  .chat-menu button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #ebb189;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }

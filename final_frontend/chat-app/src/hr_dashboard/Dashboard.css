@@ -1,0 +1,55 @@
+/* 全局樣式 */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+  }
+  
+  h1, h2 {
+    color: #333;
+  }
+  
+  /* 儀表板樣式 */
+  .dashboard-container {
+    max-width: 960px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dashboard-title {
+    font-size: 2em;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+  }
+  
+  .chart-container {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .date-picker-container {
+    margin-bottom: 20px;
+  }
+  
+  .date-picker-label {
+    font-size: 1em;
+    margin-right: 10px;
+  }
+  
+  .date-picker-input {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+  }
+  

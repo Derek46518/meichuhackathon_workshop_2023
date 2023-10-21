@@ -1,0 +1,25 @@
+.message {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 15px;
+  max-width: 60%;
+  display: inline-block;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+}
+
+.user-message {
+  background-color: #dcf8c6;
+  align-self: flex-end;
+  margin-right: 10px;
+}
+
+.bot-message {
+  background-color: #ffffff;
+  margin-left: 10px;
+}
+
+.message-content {
+  white-space: pre-wrap;
+  font-size: 14px;
+}
