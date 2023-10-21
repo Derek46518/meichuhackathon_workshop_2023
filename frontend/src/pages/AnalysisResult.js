@@ -23,7 +23,7 @@ function AnalysisResult() {
   const [showResult, setShowResult] = useState(false);
   const [responseText, setResponseText] = useState('');
   const [isTypingComplete, setIsTypingComplete] = useState(false);
-
+  const [resultImage,setResultImage] = useState('')
   const handleTypingComplete = () => {
     setIsTypingComplete(true);
   };
@@ -40,9 +40,9 @@ function AnalysisResult() {
     
     // 設定傳到Backend為Form
     const formData = new FormData();
-    formData.append('images', fileList[0].originFileObj);
+    formData.append('image', fileList[0].originFileObj);
 
-    fetch(`${backendServiceUrl}/upload`, {
+    fetch(`${backendServiceUrl}/detectImg`, {
       method: 'POST',
       body: formData,
     })

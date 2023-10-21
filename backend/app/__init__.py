@@ -1,5 +1,7 @@
 from flask import Flask, request
 from flask_cors import CORS
+import sys
+sys.path.append('./')
 
 # from app.extensions import db
 # from flask_migrate import Migrate
