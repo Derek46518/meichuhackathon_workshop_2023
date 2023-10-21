@@ -43,3 +43,24 @@ def getLatePeople():
     late_employees_sorted.to_csv("./csvData/late_employees_sorted.csv", index=False)
     return Response("Ok",200)
 
+@bp.route('/sendIllegalEmail',methods=['POST'])
+def sendIllegalEmail(recipients: str= '99588albert@gmail.com'):
+    message = MIMEMultipart()
+    message["subject"] = "[ALARM] Suspicious luggage invading"
+    message["from"] = "99588albert01@gmail.com"
+    message["to"] = ( ', ' ).join(recipients.split(','))
+    message.attach(MIMEText("主管您好<br>下面附上有攜帶違禁物品的人的員工編號<br>員工XXX敬上"))
+    with smtplib.SMTP( host = "smtp.gmail.com", port = "587" ) as smtp:
+        try:
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.login("99588albert01@gmail.com", gmail_token)
+            smtp.send_message(message)
+
+            print("Done!")
+
+        except Exception as tmp:
+            print("Error msg: ", tmp )
+
+
+    return 'OK'

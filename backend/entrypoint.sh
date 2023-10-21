@@ -8,4 +8,4 @@
 
 # echo "DB started"
 
-gunicorn -w 2 --bind 0.0.0.0:5000 run:app --timeout 120
+gunicorn -w 1 --bind 0.0.0.0:5000 run:app --timeout 120

@@ -22,11 +22,12 @@ ENV PYTHONUNBUFFERED 1
 
 # install system dependencies (libmariadb3 libmariadb-dev-compat)
 RUN apt-get update \
-  && apt-get -y install netcat gcc libmariadb3 libmariadb-dev \
+  && apt-get -y install netcat gcc libmariadb3 libmariadb-dev ffmpeg libsm6 libxext6  \
   && apt-get clean
 
 # add and install requirements
 COPY ./requirements.txt .
+
 RUN pwd && ls -l
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
@@ -37,3 +38,5 @@ RUN chmod +x /usr/src/app/entrypoint.sh
 
 # add app
 COPY . .
+
+# CMD ["flask", "run"]
