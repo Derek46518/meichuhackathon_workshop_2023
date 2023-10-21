@@ -69,6 +69,7 @@ opencv-python==4.8.1.78
 opencv-python-headless==4.6.0.66
 opt-einsum==3.3.0
 packaging==23.2
+pandasql==0.7.3
 pandas==2.1.1
 parso==0.8.3
 pickleshare==0.7.5

@@ -9,6 +9,7 @@ import os
 from werkzeug.utils import secure_filename, send_from_directory
 import uvicorn
 from fastapi import FastAPI
+import email
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
@@ -17,11 +18,13 @@ from email.mime.image import MIMEImage
 from pathlib import Path
 from fastapi import File, UploadFile
 import numpy as np
+import pandasql as ps
 # import model.detection as det
 import cv2 as cv
 import time
 import pandas as pd
 import csv
+import email.mime.application
 serialNumber = 0
 _logger = logging.getLogger("config")
 
@@ -69,44 +72,56 @@ def detectImage():
     
 @bp.route('/parseCsvAndSendMail',methods=['GET'])
 def parseCsv():
-    print(__path__)
     file_path = "./csvData/2023MCH_EmpEntry.csv"
+    # 開始產生txt
+    outMsg = ""
+    flag = False
     with open(file_path, newline='') as csvfile:
         # 讀取 CSV 檔案內容
         rows = csv.reader(csvfile)
-        # 開始產生txt
-        f = open("myfile.txt", "w")
-        flag = False
         # 以迴圈輸出每一列
         for row in rows:
             employeeID = row[0]
-            employeePic = row[7]
-            employeePicURL = "" + employeePic +".jpg"
-            message, objects = detect(employeePicURL)
-            outMsg = employeeID+":"
-            if(message=='有違禁品:'):
+            employeePic = row[6]
+            employeePicURL = "./2023MCH_TestData/" + employeePic +".jpg"
+            message, objects = detection(employeePicURL)
+            if(message=="有違禁品:"):
+                message = employeeID+message
                 flag = True
+                print("有違禁品")
                 for str in objects:
-                    if str == '0': message = message+'\n剪刀'
-                    elif str == '1': message = message+'\n電子產品'
-                    elif str == '2': message = message+'\n刀子'
-                    elif str == '3': message = message+'\n槍'
-                    elif str == '4': message = message+'\n筆電'
-                outMsg = outMsg+message
-                f.write(outMsg)
-                
-        if flag == True:
-            sendIllegalEmail()
+                    if str == '0': message = message+'電子產品、'
+                    elif str == '1': message = message+'筆電、'
+                    elif str == '2': message = message+'剪刀、'
+                    elif str == '3': message = message+'刀子、'
+                    elif str == '4': message = message+'槍、'
+                outMsg = outMsg+message+'\n'
+                #break
+    f = open("myfile.txt", "w",encoding="utf-8")
+    f.write(outMsg)
+    f.close()            
+    if flag == True:
+        sendIllegalEmail()
+            
     return Response('200',200)
 
 gmail_token = base64.b64decode("ZnlhcSBnaWJvIG9ta3IgZHZrZQ==").decode('utf-8')
-
-def sendIllegalEmail(attachments='',recipients: str= '99588albert@gmail.com'):
+def sendIllegalEmail(recipients: str= '99588albert@gmail.com'):
     message = MIMEMultipart()
     message["subject"] = "[ALARM] Suspicious luggage invading"
     message["from"] = "99588albert01@gmail.com"
     message["to"] = ( ', ' ).join(recipients.split(','))
-    message.attach(MIMEText("主管您好<br>下面附上有攜帶違禁物品的人的員工編號<br>員工XXX敬上"))
+    message.attach(MIMEText("主管您好\n下面附上有攜帶違禁物品的人的員工編號\n員工XXX敬上"))
+    # PDF attachment
+    filename='myfile.txt'
+    fp=open(filename,'rb')
+    att = email.mime.application.MIMEApplication(fp.read(),_subtype="txt")
+    fp.close()
+    att.add_header('Content-Disposition','attachment',filename=filename)
+    message.attach(att)
+    
+    fp.close()
+    fp=open(filename,'rb')
     with smtplib.SMTP( host = "smtp.gmail.com", port = "587" ) as smtp:
         try:
             smtp.ehlo()
@@ -121,3 +136,24 @@ def sendIllegalEmail(attachments='',recipients: str= '99588albert@gmail.com'):
 
 
     return 'OK'
+@bp.route('/get-data',methods=['POST'])
+def get_data():
+    print(request.args)
+    date = request.json.get('date')
+    DeptID = request.json.get('DeptID')
+    Zone = request.json.get('Zone')
+    queryString = ""
+    if date is not None:
+        queryString = queryString +"Date == '"+date + "' "
+    if DeptID is not None:
+        if len(queryString) != 0 : queryString = queryString + ' and '
+        queryString = queryString +"DeptId == '"+DeptID + "'"
+    if Zone is not None:
+        if len(queryString) != 0 : queryString = queryString + ' and '
+        queryString = queryString +"Zone == '"+Zone + "'"
+    print(queryString)
+    df = pd.read_csv("./csvData/sep_date_time.csv")
+    
+    result = df.query(queryString)
+    result.to_csv('filtered_data.csv', index=False)
+    return Response('aaa',200)

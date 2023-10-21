@@ -42,6 +42,7 @@ def getLatePeople():
 # save into a csv file
     late_employees_sorted.to_csv("./csvData/late_employees_sorted.csv", index=False)
     return Response("Ok",200)
+gmail_token = base64.b64decode("ZnlhcSBnaWJvIG9ta3IgZHZrZQ==").decode('utf-8')
 
 @bp.route('/sendIllegalEmail',methods=['POST'])
 def sendIllegalEmail(recipients: str= '99588albert@gmail.com'):
