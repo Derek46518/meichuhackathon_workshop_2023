@@ -43,4 +43,3 @@ def getLatePeople():
     late_employees_sorted.to_csv("./csvData/late_employees_sorted.csv", index=False)
     return Response("Ok",200)
 
-@bp.route('/get')

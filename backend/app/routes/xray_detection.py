@@ -2,7 +2,7 @@ from . import bp
 from common import logging
 from flask import Flask, render_template, request, redirect, send_file, url_for, Response
 from ..metricss import custom_metrics
-from .yolov7.detect import detect 
+import detect 
 import subprocess
 from subprocess import Popen
 import os
