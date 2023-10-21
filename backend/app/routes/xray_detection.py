@@ -2,7 +2,7 @@ from . import bp
 from common import logging
 from flask import Flask, render_template, request, redirect, send_file, url_for, Response
 from ..metricss import custom_metrics
-import detect 
+from .yolov7.detect import detect 
 import subprocess
 from subprocess import Popen
 import os
@@ -20,6 +20,7 @@ import numpy as np
 # import model.detection as det
 import cv2 as cv
 import time
+
 serialNumber = 0
 _logger = logging.getLogger("config")
 
@@ -55,32 +56,23 @@ def detectImage():
         latest_subfolder = max(subfolders, key=lambda x: os.path.getctime(os.path.join(folder_path, x)))    
         #image_path = folder_path+'/'+latest_subfolder+'/'+image.filename
         image_path = folder_path+'/'+latest_subfolder+'/labels'+'/'+image.filename.replace('jpg','txt')
+        responseString = ''
         try:
             f = open(image_path, 'r')
             for content in f:
                 if content.startswith(('1','2','3','4','5')):
                     #底下做有違禁品的處理
+                    responseString = responseString+"有違禁品"
                     return Response("有違禁品",200)
-                else: return Response("有電子產品",200)
+                else: 
+                    responseString = responseString+"有電子產品"
+                    return Response("有電子產品",200)
             f.close()
         # 檔案不存在的例外處理
         except FileNotFoundError:
             return Response("沒有違禁品",200)
         
     else: return Response("400",400)
-        
-# 寄送遲到者郵件       
-@bp.route('/sendLateEmail',methods=['POST'])
-def sendEmail():
-    return Response()
-       
-    
-
-#分析
-@bp.route('/getAnaysisResult',methods=['GET'])
-def getResult():
-    return Response()
-
 # 顯示pyplot結果
 '''
 @app.route('/test')
