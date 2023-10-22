@@ -1,6 +1,6 @@
 from . import bp
 from common import logging
-from flask import Flask, render_template, request, redirect, send_file, url_for, Response
+from flask import Flask,jsonify, render_template, request, redirect, send_file, url_for, Response
 from ..metricss import custom_metrics
 import detect 
 import subprocess
@@ -166,6 +166,49 @@ def get_data():
 
     # 将平均时间值格式化为字符串
     average_time_str = str(average_time)
-
+    data = {'time': average_time_str}
    
-    return Response(average_time_str,200)
+    return jsonify(data), 200
+
+@bp.route('/getDaily/<date>',methods=['GET'])
+def getDaily(date):
+    df = pd.read_csv("./csvData/sep_date_time.csv")
+    DEPT_LIST = ['DEPT1','DEPT2','DEPT3','DEPT4']
+    BRANCH_LIST = ['HQ','AZ']
+    
+    toreturn ={}
+    for dept in DEPT_LIST:
+        temp={}
+        for branch in BRANCH_LIST:
+            queryString = "Date == '"+ date+"' and DeptId == '"+dept + "' and Zone == '" + branch + "'"
+            print(queryString)
+            result = df.query(queryString)
+            length = len(result)
+            temp[branch] = length
+        toreturn[dept] = temp
+    result.to_csv('filtered_data.csv', index=False)
+    
+    return jsonify(toreturn),200
+
+@bp.route('/getWeekly/<date>',methods=['GET'])
+def getWeekly(date):
+    df = pd.read_csv("./csvData/sep_date_time.csv")
+    date = datetime.strptime(date, '%Y-%m-%d')
+    BRANCH_LIST = ['HQ','AZ']
+    DATE_LIST = []
+    for i in range(7):
+        # 将日期添加到列表中
+        DATE_LIST.append(date.strftime('%Y-%m-%d'))
+        date += timedelta(days=1)
+        
+    toreturn ={}
+    for date in DATE_LIST:
+        temp={}
+        for branch in BRANCH_LIST:
+            queryString = "Date == '"+ date+"' and Zone == '" + branch + "'"
+            result = df.query(queryString)
+            length = len(result)
+            temp[branch] = length
+        toreturn[date] = temp
+    
+    return jsonify(toreturn),200

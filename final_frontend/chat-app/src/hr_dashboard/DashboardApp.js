@@ -7,25 +7,45 @@ function DashboardApp() {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [dailyData, setDailyData] = useState([]);
   const [weeklyData, setWeeklyData] = useState([]);
-
+  const getDailyURL = 'http://localhost:5000/getDaily/'+date
+  const getWeeklyURL = 'http://localhost:5000/getWeekly/'+date
   useEffect(() => {
-    // 後端要給這裡資料
-    setDailyData([
-      // Example data
-      { date: 'Dept1', HQ: 80, AZ: 70 },
-      { date: 'Dept2', HQ: 85, AZ: 65 },
-      { date: 'Dept3', HQ: 80, AZ: 70 },
-      { date: 'Dept4', HQ: 85, AZ: 65 },
-    ]);
+    // 获取REST API数据
+    fetch(getDailyURL)
+      .then(response => response.json())
+      .then(data => {
+        const transformedData = Object.keys(data).map(key => {
+          const deptName = key;
+          const HQValue = data[key]["HQ"];
+          const AZValue = data[key]["AZ"];
+        
+          return { date: deptName, HQ: HQValue, AZ: AZValue };
+        });
 
-    // 後端要給這裡資料
-    setWeeklyData([
-      { date: 'Monday', HQ: 80, AZ: 70 },
-      { date: 'Tuesday', HQ: 85, AZ: 65 },
-      { date: 'Wednesday', HQ: 90, AZ: 60 },
-      { date: 'Thursday', HQ: 95, AZ: 55 },
-      { date: 'Friday', HQ: 100, AZ: 50 },
-    ]);
+        // console.log(Object.values(transformedData))
+        setDailyData(Object.values(transformedData)); // 更新dailyData状态
+      })
+      .catch(error => {
+        console.error('获取数据时出错：', error);
+      });
+
+    // 获取REST API数据
+    fetch(getWeeklyURL)
+      .then(response => response.json())
+      .then(data => {
+        const transformedData = Object.keys(data).map(key => {
+          const deptName = key;
+          const HQValue = data[key]["HQ"];
+          const AZValue = data[key]["AZ"];
+        
+          return { date: deptName, HQ: HQValue, AZ: AZValue };
+        });
+        // console.alert(JSON.stringify(transformedData ))
+        setWeeklyData(Object.values(transformedData)); // 更新weeklyData状态
+      })
+      .catch(error => {
+        console.error('获取数据时出错：', error);
+      });
   }, [date]);
 
   return (
@@ -33,7 +53,7 @@ function DashboardApp() {
       <h1 className="dashboard-title">Employees Arrival Dashboard</h1>
       <DatePicker onDateChange={setDate} />
       <div className="chart-container">
-        <Dashboard title="Dately Arrival Rate" data={dailyData} />
+        <Dashboard title="Daily Arrival Rate" data={dailyData} />
       </div>
       <div className="chart-container">
         <Dashboard title="Weekly Arrival Rate" data={weeklyData} />
