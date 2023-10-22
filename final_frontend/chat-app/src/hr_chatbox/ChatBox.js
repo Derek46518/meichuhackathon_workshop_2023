@@ -7,23 +7,12 @@ import './ChatBox.css';
 
 function ChatBox() {
   const [messages, setMessages] = useState([]);
-/*
-  const [options, setOptions] = useState([
-    //{ label: 'Option 1', value: 'option1' },
-    //{ label: 'Option 2', value: 'option2' },
-    // ...更多選項
-  ]);
-*/
+
   const handleSendMessage = (text) => {
     setMessages([...messages, { user: 'user', text }]);
     // 在這裡你可以添加對 bot 的回應
   };
-/*
-  const handleSelectOption = (option) => {
-    setMessages([...messages, { user: 'user', text: option.label }]);
-    // 在這裡處理選單選項被選擇的邏輯
-  };
-*/
+
   return (
     <div className="chat-box">
       <div className="chat-header">

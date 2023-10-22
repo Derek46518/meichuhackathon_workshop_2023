@@ -108,12 +108,42 @@ def parseCsv():
     return Response('200',200)
 
 gmail_token = base64.b64decode("ZnlhcSBnaWJvIG9ta3IgZHZrZQ==").decode('utf-8')
+
+@bp.route('/sendReport',methods=['GET'])
+def sendReport(recipients: str= '99588albert@gmail.com'):
+    message = MIMEMultipart()
+    message["subject"] = "[人事週報]"
+    message["from"] = "99588albert01@gmail.com"
+    message["to"] = ( ', ' ).join(recipients.split(','))
+    prompt = "幫我產生09-11至09-15的週報，包括人數以及到點時間"
+    process = Popen(["python", "Gpt.py", '--userInput', prompt], shell=True)
+    process.wait()
+    f = open('output.txt','r',encoding='UTF-8')
+    str = ""
+    Lines = f.readlines()
+    for line in Lines:
+        str = str + line+'\n'
+    f.close()
+    message.attach(MIMEText("主管您好\n以下是本週人事周報:\n"+str+'\n'))
+    with smtplib.SMTP( host = "smtp.gmail.com", port = "587" ) as smtp:
+        try:
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.login("99588albert01@gmail.com", gmail_token)
+            smtp.send_message(message)
+
+            return Response("Done",200)
+
+        except Exception as tmp:
+            return Response(tmp,500)
+        
+    
 def sendIllegalEmail(recipients: str= '99588albert@gmail.com'):
     message = MIMEMultipart()
     message["subject"] = "[ALARM] Suspicious luggage invading"
     message["from"] = "99588albert01@gmail.com"
     message["to"] = ( ', ' ).join(recipients.split(','))
-    message.attach(MIMEText("主管您好\n下面附上有攜帶違禁物品的人的員工編號\n員工XXX敬上"))
+    message.attach(MIMEText("您好\n下面附上有攜帶違禁物品的人的員工編號\n還請您注意"))
     # PDF attachment
     filename='myfile.txt'
     fp=open(filename,'rb')
@@ -122,7 +152,6 @@ def sendIllegalEmail(recipients: str= '99588albert@gmail.com'):
     att.add_header('Content-Disposition','attachment',filename=filename)
     message.attach(att)
     
-    fp.close()
     fp=open(filename,'rb')
     with smtplib.SMTP( host = "smtp.gmail.com", port = "587" ) as smtp:
         try:
@@ -212,3 +241,15 @@ def getWeekly(date):
         toreturn[date] = temp
     
     return jsonify(toreturn),200
+
+@bp.route('/robotResponse/<userInput>',methods=['GET'])
+def robotResponse(userInput):
+    print(userInput)
+    try:
+        process = Popen(["python", "Gpt.py", '--userInput', userInput], shell=True)
+        process.wait()
+        f = open('output.txt','r')
+        print(str(f))
+        return Response(str(f),200)
+    except Exception as e:
+        return Response("300",400)
